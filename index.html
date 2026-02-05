@@ -5,139 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Be My Valentine? ❤️</title>
     <style>
-        :root {
-            --primary-pink: #ff4081;
-            --bg-color: #ffebee;
-            --text-red: #d32f2f;
-        }
-
         body {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            height: 100vh;
             margin: 0;
-            background-color: var(--bg-color);
+            background-color: #ffebee;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden; /* Prevents scrollbars during the chase */
-            padding: 20px;
-        }
-
-        .container {
-            text-align: center;
-            max-width: 500px;
-            position: relative;
+            overflow: hidden; /* Stops the screen from jumping/scrolling */
         }
 
         h1 {
-            color: var(--text-red);
-            font-size: clamp(1.8rem, 8vw, 2.5rem);
-            margin-bottom: 40px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+            color: #d32f2f;
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 0 20px;
         }
 
-        .buttons-wrapper {
+        /* This container keeps buttons in the center of the screen */
+        .button-group {
+            position: relative;
             display: flex;
+            gap: 40px; 
             justify-content: center;
             align-items: center;
-            gap: 20px;
-            height: 100px; /* Essential to keep the "Yes" button stable */
+            width: 100%;
+            height: 100px;
         }
 
         button {
-            padding: 15px 35px;
+            padding: 15px 30px;
             font-size: 1.2rem;
             border: none;
-            border-radius: 50px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         #yesBtn {
-            background-color: var(--primary-pink);
+            background-color: #ff4081;
             color: white;
-            transition: transform 0.2s;
-        }
-
-        #yesBtn:hover {
-            transform: scale(1.1);
+            z-index: 2; /* Ensures Yes is always visible */
         }
 
         #noBtn {
             background-color: #9e9e9e;
             color: white;
-            position: absolute; /* Allows manual X/Y positioning */
+            position: fixed; /* Fixed keeps it relative to the screen, not the container */
             transition: all 0.2s ease;
-            white-space: nowrap;
-            touch-action: none; /* Prevents default mobile scrolling when tapping */
+            touch-action: none; /* Crucial for mobile performance */
+            z-index: 3;
         }
 
         #success {
             display: none;
             text-align: center;
-            animation: heartBeat 0.8s ease;
-        }
-
-        @keyframes heartBeat {
-            0% { transform: scale(0.8); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
         }
 
         img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 20px;
+            max-width: 250px;
+            border-radius: 15px;
             margin-top: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
     </style>
 </head>
 <body>
 
-    <div id="quiz" class="container">
+    <div id="quiz">
         <h1>Will you be my Valentine? ❤️</h1>
-        <div class="buttons-wrapper">
+        <div class="button-group">
             <button id="yesBtn" onclick="celebrate()">Yes!</button>
-            <button id="noBtn" onmouseover="moveButton()" ontouchstart="moveButton()">No</button>
+            <button id="noBtn">No</button>
         </div>
     </div>
 
-    <div id="success" class="container">
+    <div id="success">
         <h1>I knew you'd say yes! 🥰</h1>
-        <img src="https://media.giphy.com/media/KztT2c4u8mYYUiBtOh/giphy.gif" alt="Happy Cat GIF">
+        <img src="https://media.giphy.com/media/KztT2c4u8mYYUiBtOh/giphy.gif" alt="Happy Cat">
     </div>
 
     <script>
-        // Set initial position of the "No" button next to "Yes"
-        window.onload = function() {
-            const noBtn = document.getElementById('noBtn');
-            const yesBtn = document.getElementById('yesBtn');
-            const rect = yesBtn.getBoundingClientRect();
-            
-            // Place No button to the right of Yes button initially
-            noBtn.style.left = (rect.right + 20) + 'px';
-            noBtn.style.top = rect.top + 'px';
-        };
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+
+        // Initial centering of the "No" button
+        function centerNoButton() {
+            const yesRect = yesBtn.getBoundingClientRect();
+            // Positions "No" button slightly to the right of "Yes" so they don't overlap
+            noBtn.style.left = (yesRect.right + 20) + 'px';
+            noBtn.style.top = yesRect.top + 'px';
+        }
+
+        // Run positioning on load
+        window.onload = centerNoButton;
 
         function moveButton() {
-            const btn = document.getElementById('noBtn');
-            
-            // Calculate safe boundaries (window size minus button size)
-            const padding = 20;
-            const maxWidth = window.innerWidth - btn.offsetWidth - padding;
-            const maxHeight = window.innerHeight - btn.offsetHeight - padding;
+            // Padding ensures it doesn't get stuck at the very edge of the mobile screen
+            const padding = 50; 
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
 
-            // Generate random coordinates
-            const randomX = Math.max(padding, Math.floor(Math.random() * maxWidth));
-            const randomY = Math.max(padding, Math.floor(Math.random() * maxHeight));
+            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
 
-            // Apply new position
-            btn.style.left = randomX + 'px';
-            btn.style.top = randomY + 'px';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
         }
+
+        // Add events for both Mouse and Touch
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevents clicking the button on mobile
+            moveButton();
+        });
 
         function celebrate() {
             document.getElementById('quiz').style.display = 'none';
