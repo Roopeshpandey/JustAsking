@@ -2,15 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Be My Valentine? ❤️</title>
     <style>
-        :root {
-            --pink: #ff4081;
-            --red: #d32f2f;
-            --bg: #ffebee;
-        }
-
         body {
             display: flex;
             flex-direction: column;
@@ -18,73 +12,75 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: var(--bg);
+            background-color: #ffebee;
             font-family: 'Segoe UI', Tahoma, sans-serif;
-            overflow: hidden; 
+            overflow: hidden;
+            touch-action: manipulation;
         }
 
         .container {
             text-align: center;
+            position: relative;
             width: 100%;
-            max-width: 400px;
-            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         h1 {
-            color: var(--red);
+            color: #d32f2f;
             font-size: 2rem;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            z-index: 10;
         }
 
-        .button-wrapper {
+        .buttons {
             display: flex;
-            justify-content: center;
+            gap: 20px;
             align-items: center;
-            gap: 20px; 
-            height: 100px;
-            position: relative;
+            justify-content: center;
+            min-height: 100px;
+            width: 100%;
         }
 
         button {
-            padding: 15px 35px;
+            padding: 15px 30px;
             font-size: 1.2rem;
             border: none;
             border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.1s;
         }
 
         #yesBtn {
-            background-color: var(--pink);
+            background-color: #ff4081;
             color: white;
-            position: relative;
-            z-index: 1;
+            z-index: 5;
         }
 
         #noBtn {
             background-color: #9e9e9e;
             color: white;
-            position: absolute; 
-            /* These starting values ensure it's visible near the Yes button immediately */
-            left: 60%; 
-            top: 25%;
+            position: absolute; /* Allows it to move */
+            z-index: 4;
             transition: all 0.2s ease;
-            touch-action: none;
-            z-index: 2;
         }
 
         #success {
             display: none;
             text-align: center;
+            z-index: 20;
         }
 
         #success img {
-            width: 100%;
-            max-width: 300px;
+            max-width: 90%;
+            width: 300px;
             border-radius: 20px;
             margin-top: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -92,7 +88,7 @@
 
     <div id="quiz" class="container">
         <h1>Will you be my Valentine? ❤️</h1>
-        <div class="button-wrapper">
+        <div class="buttons">
             <button id="yesBtn" onclick="celebrate()">Yes!</button>
             <button id="noBtn" onmouseover="moveButton()" ontouchstart="moveButton()">No</button>
         </div>
@@ -100,29 +96,30 @@
 
     <div id="success" class="container">
         <h1>I knew you'd say yes! 🥰</h1>
-        <img src="love-gif-cute.gif" alt="Happy Valentine GIF">
+        <img src="love-gif-cute.gif" alt="Happy Valentine">
     </div>
 
     <script>
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
 
-        // This function forces the button into view if it's lost
-        function initPosition() {
-            const rect = yesBtn.getBoundingClientRect();
-            noBtn.style.left = (rect.right + 20) + 'px';
-            noBtn.style.top = rect.top + 'px';
+        // Position the No button next to Yes initially
+        function setInitialPosition() {
+            const yesRect = yesBtn.getBoundingClientRect();
+            noBtn.style.left = (yesRect.right + 20) + 'px';
+            noBtn.style.top = yesRect.top + 'px';
         }
 
-        // Run on load and on resize to keep it visible
-        window.addEventListener('load', initPosition);
-        window.addEventListener('resize', initPosition);
+        window.onload = setInitialPosition;
+        window.onresize = setInitialPosition;
 
         function moveButton() {
-            const padding = 60; 
+            // Keep button within a "Safe Zone" (the red box area)
+            const padding = 80;
             const maxX = window.innerWidth - noBtn.offsetWidth - padding;
             const maxY = window.innerHeight - noBtn.offsetHeight - padding;
 
+            // Generate coordinates that aren't too close to the edges
             const randomX = Math.floor(Math.random() * (maxX - padding)) + padding;
             const randomY = Math.floor(Math.random() * (maxY - padding)) + padding;
 
