@@ -20,7 +20,7 @@
             margin: 0;
             background-color: var(--bg);
             font-family: 'Segoe UI', Tahoma, sans-serif;
-            overflow: hidden; /* Stops scrolling when button jumps */
+            overflow: hidden; 
         }
 
         .container {
@@ -40,7 +40,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px; /* Space between Yes and No initially */
+            gap: 20px; 
             height: 100px;
             position: relative;
         }
@@ -58,15 +58,19 @@
         #yesBtn {
             background-color: var(--pink);
             color: white;
+            position: relative;
             z-index: 1;
         }
 
         #noBtn {
             background-color: #9e9e9e;
             color: white;
-            position: absolute; /* Moves anywhere on screen */
+            position: absolute; 
+            /* These starting values ensure it's visible near the Yes button immediately */
+            left: 60%; 
+            top: 25%;
             transition: all 0.2s ease;
-            touch-action: none; /* Helps mobile response */
+            touch-action: none;
             z-index: 2;
         }
 
@@ -103,20 +107,22 @@
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
 
-        // This centers the "No" button next to "Yes" on load
-        window.onload = () => {
+        // This function forces the button into view if it's lost
+        function initPosition() {
             const rect = yesBtn.getBoundingClientRect();
             noBtn.style.left = (rect.right + 20) + 'px';
             noBtn.style.top = rect.top + 'px';
-        };
+        }
+
+        // Run on load and on resize to keep it visible
+        window.addEventListener('load', initPosition);
+        window.addEventListener('resize', initPosition);
 
         function moveButton() {
-            // Screen boundaries
-            const padding = 60; // Keeps it away from difficult mobile corners
+            const padding = 60; 
             const maxX = window.innerWidth - noBtn.offsetWidth - padding;
             const maxY = window.innerHeight - noBtn.offsetHeight - padding;
 
-            // Generate random spot
             const randomX = Math.floor(Math.random() * (maxX - padding)) + padding;
             const randomY = Math.floor(Math.random() * (maxY - padding)) + padding;
 
